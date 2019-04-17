@@ -23,15 +23,14 @@ import com.hbt.semillero.entidades.Plato;
 import com.hbt.semillero.servicios.interfaces.IConsultasEjbLocal;
 
 /**
- * @author Duvis Alejandro Gómez Neira
- * EJB de consultas
+ * @author Duvis Alejandro Gómez Neira EJB de consultas
  */
 @Stateless
 public class ConsultasEJB implements IConsultasEjbLocal {
 
 	@PersistenceContext
 	private EntityManager em;
-	
+
 	/**
 	 * Método que permite consultar las bebidas almacenadas en la base de datos
 	 */
@@ -49,6 +48,7 @@ public class ConsultasEJB implements IConsultasEjbLocal {
 
 	/**
 	 * Construye un DTO de Bebida
+	 * 
 	 * @param bebida
 	 * @return
 	 */
@@ -56,6 +56,7 @@ public class ConsultasEJB implements IConsultasEjbLocal {
 		BebidaDTO bebidaDTO = new BebidaDTO();
 		bebidaDTO.setBebidaId(bebida.getBebidaId());
 		bebidaDTO.setBebidaNombre(bebida.getBebidaNombre());
+		bebidaDTO.setPrecio(bebida.getPrecio());
 		return bebidaDTO;
 	}
 
@@ -71,11 +72,12 @@ public class ConsultasEJB implements IConsultasEjbLocal {
 			platosReturn.add(construirPlatoDTO(plato));
 		}
 		return platosReturn;
-		
+
 	}
-	
+
 	/**
 	 * Construye un DTO de Plato
+	 * 
 	 * @param plato
 	 * @return
 	 */
@@ -101,9 +103,10 @@ public class ConsultasEJB implements IConsultasEjbLocal {
 		}
 		return clientesReturn;
 	}
-	
+
 	/**
 	 * Construye un DTO de Cliente
+	 * 
 	 * @param cliente
 	 * @return
 	 */
@@ -113,7 +116,7 @@ public class ConsultasEJB implements IConsultasEjbLocal {
 		clienteDTO.setClienteNombre(cliente.getClienteNombre());
 		return clienteDTO;
 	}
-	
+
 	/**
 	 * Método que permite consultar las facturas almacenadas en la base de datos
 	 */
@@ -127,23 +130,25 @@ public class ConsultasEJB implements IConsultasEjbLocal {
 		}
 		return facturasReturn;
 	}
-	
+
 	/**
 	 * Construye un DTO de Factura
+	 * 
 	 * @param factura
 	 * @return
 	 */
 	private FacturaDTO construirFacturaDTO(Factura factura) {
-		FacturaDTO facturaDTO =new FacturaDTO();		
+		FacturaDTO facturaDTO = new FacturaDTO();
 		facturaDTO.setCliente(construirClienteDTO(factura.getCliente()));
 		facturaDTO.setFacturaId(factura.getFacturaId());
 		facturaDTO.setIva(factura.getIva());
 		facturaDTO.setTotal(factura.getTotal());
 		return facturaDTO;
 	}
-	
+
 	/**
-	 * Método que permite consultar los detalles de una factura almacenados en la base de datos
+	 * Método que permite consultar los detalles de una factura almacenados en la
+	 * base de datos
 	 */
 	@Override
 	@TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
@@ -158,6 +163,7 @@ public class ConsultasEJB implements IConsultasEjbLocal {
 
 	/**
 	 * Construye un DTO de FacturaDetalle
+	 * 
 	 * @param facturaDetalle
 	 * @return
 	 */
@@ -183,9 +189,11 @@ public class ConsultasEJB implements IConsultasEjbLocal {
 		}
 		return new ResultadoDTO(true, "Creado de forma exitosa");
 	}
-	
+
 	/**
-	 * Método que permite persistir una factura detalle de un objeto facturaDetalleDTO.
+	 * Método que permite persistir una factura detalle de un objeto
+	 * facturaDetalleDTO.
+	 * 
 	 * @param facturaDetalleDTO
 	 * @return
 	 */
@@ -199,9 +207,43 @@ public class ConsultasEJB implements IConsultasEjbLocal {
 		facturaDetalle.setPrecioUnitario(facturaDetalleDTO.getPrecioUnitario());
 		return facturaDetalle;
 	}
-	
+
+	private Bebida construirBebida(BebidaDTO bebidaDTO) {
+		Bebida bebida = new Bebida();
+		bebida.setBebidaId(bebidaDTO.getBebidaId());
+		bebida.setBebidaNombre(bebidaDTO.getBebidaNombre());
+		bebida.setPrecio(bebidaDTO.getPrecio());
+		return bebida;
+	}
+
+	private Plato construirPlato(PlatoDTO platoDTO) {
+		Plato plato = new Plato();
+		plato.setIdPlato(platoDTO.getIdPlato());
+		plato.setPlatoDescripcion(platoDTO.getPlatoDescripcion());
+		plato.setPlatoNombre(platoDTO.getPlatoNombre());
+		plato.setPrecio(platoDTO.getPrecio());
+		return plato;
+	}
+
+	private Cliente construirCliente(ClienteDTO clienteDTO) {
+		Cliente cliente = new Cliente();
+		cliente.setClienteId(clienteDTO.getClienteId());
+		cliente.setClienteNombre(clienteDTO.getClienteNombre());
+		return cliente;
+	}
+
+	private Factura construirFactura(FacturaDTO facturaDTO) {
+		Factura factura = new Factura();
+		factura.setCliente(findCliente(facturaDTO.getCliente().getClienteId()));
+		factura.setFacturaId(facturaDTO.getFacturaId());
+		factura.setIva(facturaDTO.getIva());
+		factura.setTotal(facturaDTO.getTotal());
+		return factura;
+	}
+
 	/**
 	 * Método que permite buscar una bebida dentro de la base de datos
+	 * 
 	 * @param idBebida Identificador de la bebida que se desea buscar
 	 * @return
 	 */
@@ -212,9 +254,10 @@ public class ConsultasEJB implements IConsultasEjbLocal {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Método que permite buscar una factura dentro de la base de datos
+	 * 
 	 * @param idFactura Identificador de la factura que se desea buscar
 	 * @return
 	 */
@@ -225,9 +268,10 @@ public class ConsultasEJB implements IConsultasEjbLocal {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Método que permite buscar un Plato dentro de la base de datos
+	 * 
 	 * @param idPlato Identificador de la factura que se desea buscar
 	 * @return
 	 */
@@ -238,6 +282,177 @@ public class ConsultasEJB implements IConsultasEjbLocal {
 			return null;
 		}
 	}
-	
+
+	private Cliente findCliente(String idCliente) {
+		try {
+			return em.find(Cliente.class, idCliente);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	@Override
+	public ResultadoDTO eliminarBebida(String idBebida) {
+		try {
+			em.remove(em.find(Bebida.class, idBebida));
+		} catch (Exception e) {
+			return new ResultadoDTO(false, e.getMessage());
+		}
+		return new ResultadoDTO(true, "Bebida eliminada de froma exitosa");
+	}
+
+	@Override
+	public ResultadoDTO eliminarPlato(String idPlato) {
+		try {
+			em.remove(em.find(Plato.class, idPlato));
+		} catch (Exception e) {
+			return new ResultadoDTO(false, e.getMessage());
+		}
+		return new ResultadoDTO(true, "Plato eliminado de froma exitosa");
+	}
+
+	@Override
+	public ResultadoDTO eliminarCliente(String idCliente) {
+		try {
+			em.remove(em.find(Cliente.class, idCliente));
+		} catch (Exception e) {
+			return new ResultadoDTO(false, e.getMessage());
+		}
+		return new ResultadoDTO(true, "Cliente eliminado de froma exitosa");
+	}
+
+	@Override
+	public ResultadoDTO eliminarFactura(String idFactura) {
+		try {
+			em.remove(em.find(Factura.class, idFactura));
+		} catch (Exception e) {
+			return new ResultadoDTO(false, e.getMessage());
+		}
+		return new ResultadoDTO(true, "Factura eliminada de froma exitosa");
+	}
+
+	@Override
+	public ResultadoDTO eliminarFacturaDetalles(String idFacturaDetalles) {
+		try {
+			em.remove(em.find(FacturaDetalle.class, idFacturaDetalles));
+		} catch (Exception e) {
+			return new ResultadoDTO(false, e.getMessage());
+		}
+		return new ResultadoDTO(true, "FacturaDetalle eliminada de froma exitosa");
+
+	}
+
+	@Override
+	public ResultadoDTO crearBebida(BebidaDTO bebidaDTO) {
+		try {
+			Bebida bebida = construirBebida(bebidaDTO);
+			em.persist(bebida);
+		} catch (Exception e) {
+			return new ResultadoDTO(false, e.getMessage());
+		}
+		return new ResultadoDTO(true, "Bebida Creada de forma exitosa");
+	}
+
+	@Override
+	public ResultadoDTO crearPlato(PlatoDTO platoDTO) {
+		try {
+			Plato plato = construirPlato(platoDTO);
+			em.persist(plato);
+		} catch (Exception e) {
+			return new ResultadoDTO(false, e.getMessage());
+		}
+		return new ResultadoDTO(true, "Plato Creado de forma exitosa");
+	}
+
+	@Override
+	public ResultadoDTO crearCliente(ClienteDTO clienteDTO) {
+		try {
+			Cliente cliente = construirCliente(clienteDTO);
+			em.persist(cliente);
+		} catch (Exception e) {
+			return new ResultadoDTO(false, e.getMessage());
+		}
+		return new ResultadoDTO(true, "Cliente Creado de forma exitosa");
+	}
+
+	@Override
+	public ResultadoDTO crearFactura(FacturaDTO facturaDTO) {
+		try {
+			Factura factura = construirFactura(facturaDTO);
+			em.persist(factura);
+		} catch (Exception e) {
+			return new ResultadoDTO(false, e.getMessage());
+		}
+		return new ResultadoDTO(true, "Factura Creada de forma exitosa");
+	}
+
+	@Override
+	public ResultadoDTO editarBebida(BebidaDTO bebidaDTO) {
+		try {
+			Bebida bebida = em.find(Bebida.class, bebidaDTO.getBebidaId());
+			bebida.setBebidaNombre(bebidaDTO.getBebidaNombre());
+			bebida.setPrecio(bebidaDTO.getPrecio());
+			em.merge(bebida);
+		} catch (Exception e) {
+			return new ResultadoDTO(false, e.getMessage());
+		}
+		return new ResultadoDTO(true, "Bebida Editada de forma exitosa");
+	}
+
+	@Override
+	public ResultadoDTO editarPlato(PlatoDTO platoDTO) {
+		try {
+			Plato plato = em.find(Plato.class, platoDTO.getIdPlato());
+			plato.setPlatoDescripcion(platoDTO.getPlatoDescripcion());
+			plato.setPlatoNombre(platoDTO.getPlatoNombre());
+			plato.setPrecio(platoDTO.getPrecio());
+			em.merge(plato);
+		} catch (Exception e) {
+			return new ResultadoDTO(false, e.getMessage());
+		}
+		return new ResultadoDTO(true, "Plato Editado de forma exitosa");
+	}
+
+	@Override
+	public ResultadoDTO editarCliente(ClienteDTO clienteDTO) {
+		try {
+			Cliente cliente = em.find(Cliente.class, clienteDTO.getClienteId());
+			cliente.setClienteNombre(clienteDTO.getClienteNombre());
+			em.merge(cliente);
+		} catch (Exception e) {
+			return new ResultadoDTO(false, e.getMessage());
+		}
+		return new ResultadoDTO(true, "Cliente Editado de forma exitosa");
+	}
+
+	@Override
+	public ResultadoDTO editarFactura(FacturaDTO facturaDTO) {
+		try {
+			Factura factura = em.find(Factura.class, facturaDTO.getFacturaId());
+			factura.setCliente(findCliente(facturaDTO.getCliente().getClienteId()));
+			factura.setIva(facturaDTO.getIva());
+			factura.setTotal(facturaDTO.getTotal());
+			em.merge(factura);
+		} catch (Exception e) {
+			return new ResultadoDTO(false, e.getMessage());
+		}
+		return new ResultadoDTO(true, "Factura Editada de forma exitosa");
+	}
+
+	@Override
+	public ResultadoDTO editarFacturaDetalles(FacturaDetalleDTO facturaDetalleDTO) {
+		try {
+			FacturaDetalle facturaDetalle = em.find(FacturaDetalle.class, facturaDetalleDTO.getDetalleId());
+			facturaDetalle.setBebida(findBebida(facturaDetalleDTO.getBebida().getBebidaId()));
+			facturaDetalle.setConsumoLocal(facturaDetalleDTO.isConsumoLocal());
+			facturaDetalle.setFactura(findFactura(facturaDetalleDTO.getFactura().getFacturaId()));
+			facturaDetalle.setPlato(findPlato(facturaDetalleDTO.getPlato().getIdPlato()));
+			facturaDetalle.setPrecioUnitario(facturaDetalleDTO.getPrecioUnitario());
+			em.merge(facturaDetalle);
+		} catch (Exception e) {
+			return new ResultadoDTO(false, e.getMessage());
+		}
+		return new ResultadoDTO(true, "FacturaDetalle Editada de forma exitosa");
+	}
 
 }

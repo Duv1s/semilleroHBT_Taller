@@ -21,15 +21,15 @@ public class FacturaDetalle {
 	@Column(name="DETALLE_ID")
 	private String detalleId;
 	
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne()
 	@JoinColumn(name="FACTURA_ID")
 	private Factura factura;
 	
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne()
 	@JoinColumn(name="PLATO_ID")
 	private Plato plato;
 	
-	@ManyToOne(fetch=FetchType.LAZY)
+	@ManyToOne()
 	@JoinColumn(name="BEBIDA_ID")
 	private Bebida bebida;
 	
